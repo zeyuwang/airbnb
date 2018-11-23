@@ -14,20 +14,22 @@ public class MenuCombinationSum {
     public class Solution {
         private void search(List<List<Double>> res, int[] centsPrices, int start, int centsTarget,
                             List<Double> curCombo, double[] prices) {
+            System.out.printf("start is %d, centsTarget is %d.\n", start, centsTarget);
             if (centsTarget == 0) {
                 res.add(new ArrayList<>(curCombo));
                 return;
             }
 
             for (int i = start; i < centsPrices.length; i++) {
-                if (i > start && centsPrices[i] == centsPrices[i - 1]) {
-                    continue;
-                }
+//                if (i > start && centsPrices[i] == centsPrices[i - 1]) { // why?
+//                    continue;
+//                }
                 if (centsPrices[i] > centsTarget) {
-                    break;
+                    break; // stop when target price is lower than next price
                 }
                 curCombo.add(prices[i]);
-                search(res, centsPrices, i + 1, centsTarget - centsPrices[i], curCombo, prices);
+//                search(res, centsPrices, i + 1, centsTarget - centsPrices[i], curCombo, prices); // can't use one item for twice
+                search(res, centsPrices, i , centsTarget - centsPrices[i], curCombo, prices); // can use one item for twice
                 curCombo.remove(curCombo.size() - 1);
             }
         }

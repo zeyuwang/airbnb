@@ -13,18 +13,26 @@ public class MinimumVerticestoTraverseDirectedGraph {
         AirBnB Interview Question
      */
     public class Solution {
+        // result
+        // adjacency linked list
+        // cur visiting node
+        // start node
+        // visited node
+        // visiting node
         private void search(Set<Integer> res, Map<Integer, Set<Integer>> nodes, int cur, int start,
                             Set<Integer> visited, Set<Integer> currVisited) {
-            currVisited.add(cur);
-            visited.add(cur);
+            currVisited.add(cur); // mark as visited
             for (int next : nodes.get(cur)) {
                 if (res.contains(next) && next != start) {
+                    // each child, it it is already in the result,
+                    // then we remove it, since it can be reached from current vertex
                     res.remove(next);
                 }
-                if (!currVisited.contains(next)) {
+                if (!currVisited.contains(next)) { // if there is no cycle, continue visit
                     search(res, nodes, next, start, visited, currVisited);
                 }
             }
+            visited.add(cur); // mark as visiting
         }
 
         public List<Integer> getMin(int[][] edges, int n) {
@@ -40,9 +48,8 @@ public class MinimumVerticestoTraverseDirectedGraph {
             Set<Integer> res = new HashSet<>();
             for (int i = 0; i < n; i++) {
                 if (!visited.contains(i)) {
-                    res.add(i);
-                    visited.add(i);
-                    search(res, nodes, i, i, visited, new HashSet<>());
+                    res.add(i); // i is the start node, it is also the representative of the strong connected cluster
+                    search(res, nodes, i, i, visited, new HashSet<>()); // find strong connected component start from i
                 }
             }
 

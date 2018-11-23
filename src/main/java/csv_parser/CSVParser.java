@@ -14,37 +14,45 @@ public class CSVParser {
      */
     public class Solution {
         public String parseCSV(String str) {
-            List<String> res = new ArrayList<>();
+            List<String> res = new ArrayList<>(); // list of phrase for current csv line
             boolean inQuote = false;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(); // sb for current phrase
             for (int i = 0; i < str.length(); i++) {
-                if (inQuote) {
-                    if (str.charAt(i) == '\"') {
-                        if (i < str.length() - 1 && str.charAt(i + 1) == '\"') {
-                            sb.append("\"");
-                            i++;
-                        } else {
+                if (inQuote) { // 1) when in quote
+                    if (str.charAt(i) == '\"') { // 1.1) if encounter a quote
+                        if (i < str.length() - 1 && str.charAt(i + 1) == '\"') { // 1.1.1) if it is double quote, put quote in current word
+                            sb.append("\""); // the only time we put quote in to result
+                            i++; // since we have count the next character, we need to skip it.
+                        } else { // 1.1.2) if it is not double quote, exit current quote
                             inQuote = false;
                         }
-                    } else {
+                    } else { // 1.2) if not quote, we just append result to the current phrase, even it is a comma it is fine.
                         sb.append(str.charAt(i));
                     }
-                } else {
-                    if (str.charAt(i) == '\"') {
+                } else { // 2) when not in quote:
+                    if (str.charAt(i) == '\"') { // 2.1) if encounter a quote, then we are in quote
                         inQuote = true;
-                    } else if (str.charAt(i) == ',') {
+                    } else if (str.charAt(i) == ',') { // 2.2) if get a comma, add the current phrase to list and rest sb
                         res.add(sb.toString());
                         sb.setLength(0);
-                    } else {
+                    } else if (str.charAt(i) == ' ' && (sb.length() == 0)) { // avoid heading space
+                         continue;
+                    } else { // 2.3) if not quote nor a comma, append current char to current phrase
                         sb.append(str.charAt(i));
                     }
+                }
+            }
+
+            for (int i = sb.length()-1; i > 0; i--) { // remove trailing space
+                if (sb.charAt(i) == ' ' && sb.length() == i+1 ) {
+                    sb.deleteCharAt(i);
                 }
             }
 
             if (sb.length() > 0) {
                 res.add(sb.toString());
             }
-            return String.join("|", res);
+            return String.join("|", res); // do we really need to use a | as delimiter?
         }
     }
 
@@ -95,7 +103,7 @@ public class CSVParser {
         @Test
         public void test1() {
             Solution sol = new CSVParser().new Solution();
-            String test = "John,Smith,john.smith@gmail.com,Los Angeles,1";
+            String test = "   John,Smith,john.smith@gmail.com,Los Angeles,1";
             String expected = "John|Smith|john.smith@gmail.com|Los Angeles|1";
             assertEquals(expected, sol.parseCSV(test));
 
